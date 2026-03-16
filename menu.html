@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu | May Tea & Coffee</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;800&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <style>
+        /* ==== BIẾN TOÀN CỤC (ĐỒNG BỘ 100% VỚI INDEX) ==== */
+        :root {
+            --primary: #0284c7; 
+            --primary-glow: rgba(2, 132, 199, 0.3);
+            --bg-main: #f8fafc;
+            --text-main: #0f172a;
+            --text-gray: #64748b;
+            --card-bg: rgba(255, 255, 255, 0.9);
+            --sky-top: #38bdf8; 
+            --sky-bottom: #e0f2fe; 
+            --cloud-color: #ffffff;
+            --nav-bg: rgba(255, 255, 255, 0.95);
+            --shadow: 0 10px 30px rgba(0,0,0,0.05);
+            --glass-border: rgba(255,255,255,0.8);
+        }
+
+        body.sunset-mode {
+            --sky-top: #ff7e5f; 
+            --sky-bottom: #feb47b;
+            --cloud-color: rgba(255, 245, 245, 0.9); 
+            --primary: #be123c; 
+            --primary-glow: rgba(190, 18, 60, 0.3);
+        }
+
+        body.dark-mode {
+            --bg-main: #0f172a;
+            --text-main: #f8fafc;
+            --text-gray: #94a3b8;
+            --card-bg: rgba(30, 41, 59, 0.9);
+            --sky-top: #020617; 
+            --sky-bottom: #1e293b;
+            --cloud-color: #334155; 
+            --nav-bg: rgba(15, 23, 42, 0.95);
+            --primary: #38bdf8; 
+            --shadow: 0 10px 30px rgba(0,0,0,0.5);
+            --glass-border: rgba(255,255,255,0.1);
+        }
+
+        body, html {
+            margin: 0; padding: 0;
+            font-family: 'Outfit', sans-serif;
+            color: var(--text-main);
+            background: linear-gradient(180deg, var(--sky-top) 0%, var(--sky-bottom) 100%);
+            background-attachment: fixed;
+            scroll-behavior: smooth;
+            transition: background 1s ease, color 0.5s ease;
+        }
+
+        a { text-decoration: none; color: inherit; }
+
+        /* ==== KÍNH MỜ (GLASSMORPHISM) ==== */
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+        }
+
+        /* ==== HEADER ==== */
+        .header-nav {
+            position: fixed; top: 0; left: 0; width: 100%;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px 40px; box-sizing: border-box;
+            background: var(--nav-bg); backdrop-filter: blur(10px);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1); z-index: 1000;
+        }
+        .back-btn { font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 8px; transition: 0.3s; }
+        .back-btn:hover { color: var(--primary); transform: translateX(-5px); }
+        .logo-text { font-family: 'Outfit', sans-serif; font-size: 28px; font-weight: 800; color: var(--primary); letter-spacing: 2px; text-transform: uppercase; }
+        .dark-toggle { font-size: 22px; color: var(--text-main); cursor: pointer; transition: 0.3s; }
+        .dark-toggle:hover { transform: scale(1.1); color: var(--primary); }
+
+        /* ==== MINI HERO SECTION (BẦU TRỜI CHO MENU) ==== */
+        .mini-hero {
+            position: relative; height: 35vh; min-height: 300px;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            text-align: center; padding-top: 80px; overflow: hidden; z-index: 1;
+        }
+        .sun-moon-box { position: absolute; top: 15%; right: 10%; width: 60px; height: 60px; transition: all 1s ease; z-index: 1; }
+        body.sunset-mode .sun-moon-box { display: none; }
+        .sun-moon { width: 100%; height: 100%; border-radius: 50%; background: #fde047; box-shadow: 0 0 50px rgba(253, 224, 71, 0.8); transition: all 1s ease; }
+        body.dark-mode .sun-moon { background: transparent; box-shadow: inset -10px -10px 0 0 #f8fafc, 0 0 20px rgba(255,255,255,0.2); }
+
+        .moving-clouds { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none; }
+        .cloud-anim { position: absolute; background: var(--cloud-color); border-radius: 50px; filter: blur(3px); transition: background 1s ease; }
+        .cloud-anim::before, .cloud-anim::after { content: ''; position: absolute; background: var(--cloud-color); border-radius: 50%; transition: background 1s ease; }
+        .c1 { width: 150px; height: 40px; top: 20%; opacity: 0.8; animation: drift 45s linear infinite; }
+        .c1::before { width: 60px; height: 60px; top: -30px; left: 20px; } .c1::after { width: 80px; height: 80px; top: -40px; right: 20px; }
+        .c2 { width: 200px; height: 50px; top: 50%; opacity: 0.5; animation: drift 35s linear infinite reverse; }
+        .c2::before { width: 80px; height: 80px; top: -40px; left: 30px; } .c2::after { width: 100px; height: 100px; top: -50px; right: 30px; }
+        @keyframes drift { from { left: -30%; } to { left: 110%; } }
+
+        .hero-logo { width: 150px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.1)); z-index: 10; margin-bottom: 10px;}
+        .mini-hero h1 { z-index: 10; font-family: 'Dancing Script', cursive; font-size: 40px; margin: 0; color: var(--primary); }
+
+        /* ==== KHU VỰC MENU ==== */
+        .app-container { max-width: 800px; margin: -30px auto 0; padding: 0 16px; position: relative; z-index: 10; }
+
+        .category-section { margin-bottom: 20px; }
+        .category-header {
+            padding: 20px 25px; border-radius: 20px;
+            display: flex; justify-content: space-between; align-items: center; cursor: pointer;
+        }
+        .category-header:hover { transform: translateY(-2px); }
+        .category-header h2 { margin: 0; font-size: 20px; font-weight: 800; color: var(--primary); text-transform: uppercase; letter-spacing: 1px; }
+        .toggle-icon { font-size: 18px; color: var(--primary); transition: transform 0.4s ease; }
+
+        .category-content-wrapper { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.4s ease; }
+        .category-content-wrapper.open { grid-template-rows: 1fr; }
+        .category-content { overflow: hidden; }
+
+        /* Card Đồ uống */
+        .card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 20px 0; }
+        .drink-card { border-radius: 24px; padding: 20px; display: flex; flex-direction: column; }
+        .drink-card:hover { transform: translateY(-5px); border-color: var(--primary); }
+        .card-name { font-size: 16px; font-weight: 800; color: var(--text-main); text-align: center; text-transform: uppercase; margin-bottom: 10px; }
+        .card-divider { height: 1px; background: var(--text-gray); opacity: 0.15; margin-bottom: 15px; }
+        .card-body { display: flex; gap: 15px; align-items: stretch; }
+        
+        .card-img-wrap { width: 80px; height: 100px; flex-shrink: 0; display: flex; justify-content: center; align-items: center; }
+        .card-img-wrap img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 8px 10px rgba(0,0,0,0.15)); border-radius: 12px; }
+        .placeholder-img { padding: 10px; background: rgba(255, 255, 255, 0.1); }
+
+        .card-info { flex: 1; display: flex; flex-direction: column; justify-content: space-between; align-items: flex-end; }
+        .card-desc { font-size: 12px; color: var(--text-gray); text-align: right; line-height: 1.3; }
+
+        /* Khối Giá tiền */
+        .card-price-stacked {
+            display: grid; grid-template-columns: min-content min-content auto; column-gap: 5px; row-gap: 2px;    
+            background: rgba(2, 132, 199, 0.1); padding: 6px 12px; border-radius: 12px; align-self: flex-end; margin-top: 10px;
+        }
+        .card-price-stacked span { font-size: 12px; font-weight: 800; color: var(--primary); line-height: 1.2; }
+        .p-size { text-align: left; } .p-currency { text-align: right; } .p-amount { text-align: right; }
+
+        /* Menu Giấy */
+        .simple-list { border-radius: 24px; padding: 20px; margin-bottom: 20px; display: flex; flex-direction: column; gap: 15px; }
+        .simple-item { display: flex; align-items: center; font-size: 15px; font-weight: 600; color: var(--text-main);}
+        .simple-price { color: var(--primary); font-weight: 800; }
+        .simple-dots { flex: 1; border-bottom: 2px dotted var(--text-gray); opacity: 0.3; margin: 0 10px; position: relative; top: -4px; }
+
+        /* ==== CUSTOMIZE YOUR DRINK (ICE, SUGAR, TOPPING, SYRUP) ==== */
+        .options-title { text-align: center; font-size: 16px; font-weight: 800; color: var(--text-gray); text-transform: uppercase; letter-spacing: 1.5px; margin: 50px 0 20px; }
+        .note-box { display: grid; gap: 15px; margin-top: 20px;}
+        .note-card { border-radius: 20px; padding: 20px; display: flex; align-items: center; gap: 15px; }
+        .note-icon { font-size: 20px; color: var(--primary); background: var(--bg-main); width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; border-radius: 15px; box-shadow: var(--shadow); flex-shrink: 0;}
+        .note-text strong { display: block; font-size: 15px; font-weight: 800; color: var(--text-main); margin-bottom: 3px;}
+        .note-text span { font-size: 13px; color: var(--text-gray); font-weight: 500; }
+
+        .syrup-box { width: 100%; }
+        .syrup-grid { display: grid; grid-template-columns: 1fr 1fr; column-gap: 15px; row-gap: 6px; margin-top: 10px; }
+        .syrup-grid span { font-size: 13px; color: var(--text-gray); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        /* ==== FOOTER ĐỒNG BỘ INDEX ==== */
+        .footer { background: #0f172a; color: white; padding: 70px 20px 100px; margin-top: 50px; border-radius: 40px 40px 0 0; position: relative; z-index: 10;}
+        .footer-container { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1.5fr 1fr 1.5fr; gap: 50px; }
+        .footer-logo { font-size: 28px; font-weight: 800; margin-bottom: 15px; color: var(--primary); font-family: 'Outfit', sans-serif;}
+        .footer-text { color: #94a3b8; line-height: 1.8; font-size: 15px; margin-bottom: 12px; display: flex; align-items: center; gap: 10px;}
+        .footer-text i { color: var(--primary); font-size: 16px; width: 20px; text-align: center;}
+        
+        .footer-links h4 { font-size: 20px; margin-bottom: 20px; color: white; }
+        .footer-links a { color: #94a3b8; display: block; margin-bottom: 12px; font-size: 15px; transition: 0.3s; }
+        .footer-links a:hover { color: var(--primary); transform: translateX(5px); }
+        
+        /* Chữ kế bên Social Media */
+        .social-list { display: flex; flex-direction: column; gap: 15px; margin-top: 15px; }
+        .social-list a { display: flex; align-items: center; gap: 12px; color: #94a3b8; font-size: 15px; font-weight: 500; transition: 0.3s;}
+        .social-list a i { font-size: 24px; color: white; background: rgba(255,255,255,0.1); width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: 0.3s;}
+        .social-list a:hover { color: white; }
+        .social-list a:hover i { background: var(--primary); transform: scale(1.1); }
+
+        .newsletter-form { display: flex; flex-direction: column; gap: 12px; margin-top: 15px; }
+        .newsletter-form input { padding: 14px 20px; border-radius: 10px; border: 1px solid #334155; outline: none; background: rgba(255,255,255,0.05); color: white; font-family: 'Outfit';}
+        .newsletter-form button { background: var(--primary); color: white; border: none; padding: 14px; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 16px; transition: 0.3s;}
+        .newsletter-form button:hover { background: #0ea5e9; }
+        
+        .footer-bottom { text-align: center; padding-top: 30px; margin-top: 50px; border-top: 1px solid #1e293b; color: #64748b; font-size: 14px; }
+
+        /* Floating Bottom Bar (Cho mobile) */
+        .floating-bar { 
+            display: none; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); 
+            width: 90%; max-width: 400px; background: var(--card-bg); backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border); border-radius: 100px; padding: 8px; z-index: 1000; 
+            box-shadow: 0 15px 35px var(--primary-glow);
+        }
+        .action-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 800; font-size: 15px; padding: 12px 0; border-radius: 100px; transition: 0.3s; color: var(--text-main); }
+        .btn-call { color: var(--primary); } 
+        .btn-dir { color: #059669; } 
+        .floating-bar .divider { width: 1px; height: 30px; background: var(--text-gray); opacity: 0.2; }
+
+        /* ==== RESPONSIVE ==== */
+        @media (max-width: 992px) {
+            .footer-container { grid-template-columns: 1fr 1fr; gap: 30px;}
+        }
+        @media (max-width: 768px) {
+            .header-nav { padding: 15px 20px; }
+            .card-grid { grid-template-columns: 1fr; }
+            .footer-container { grid-template-columns: 1fr; }
+            .floating-bar { display: flex; }
+        }
+    </style>
+</head>
+<body class="light-mode">
+
+    <header class="header-nav">
+        <a href="index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Home</a>
+        <div class="logo-text">MAY.</div>
+        <i class="fa-solid fa-sun dark-toggle" id="darkModeBtn" onclick="toggleTheme()" title="Change Time of Day"></i>
+    </header>
+
+    <section class="mini-hero">
+        <div class="sun-moon-box"><div class="sun-moon"></div></div>
+        <div class="moving-clouds">
+            <div class="cloud-anim c1"></div><div class="cloud-anim c2"></div><div class="cloud-anim c3"></div>
+        </div>
+        <img src="images/logo.png" alt="May Tea & Coffee" id="hero-logo" class="hero-logo dynamic-logo">
+        <h1>Our Cloud Menu</h1>
+    </section>
+
+    <div class="app-container">
+        
+        <main id="menu-container"></main>
+
+        <h3 class="options-title">Customize Your Drink</h3>
+        <div class="note-box">
+            <div class="note-card glass-card">
+                <div class="note-icon"><i class="fa-solid fa-snowflake"></i></div>
+                <div class="note-text">
+                    <strong>Ice Level</strong>
+                    <span>Regular • Less • No Ice</span>
+                </div>
+            </div>
+            
+            <div class="note-card glass-card">
+                <div class="note-icon"><i class="fa-solid fa-cubes-stacked"></i></div>
+                <div class="note-text">
+                    <strong>Sugar Level</strong>
+                    <span>0% • 30% • 50% • 70% • 100%</span>
+                </div>
+            </div>
+            
+            <div class="note-card glass-card">
+                <div class="note-icon"><i class="fa-solid fa-cookie"></i></div>
+                <div class="note-text syrup-box">
+                    <strong>Toppings (+$0.75 for 1 | +$0.50 for 2)</strong>
+                    <div class="syrup-grid">
+                        <span>• Honey Boba</span>
+                        <span>• Crystal Boba</span>
+                        <span>• Lychee Jelly</span>
+                        <span>• Aloe Vera</span>
+                        <span>• Cheese Foam</span>
+                        <span>• Egg Pudding</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="note-card glass-card">
+                <div class="note-icon"><i class="fa-solid fa-jar"></i></div>
+                <div class="note-text syrup-box">
+                    <strong>Syrup Flavors (+$0.50)</strong>
+                    <div class="syrup-grid">
+                        <span>• Caramel</span>
+                        <span>• Peppermint</span>
+                        <span>• Honey</span>
+                        <span>• Vanilla</span>
+                        <span>• Hazelnut</span>
+                        <span>• Sugar-Free Vanilla</span>
+                        <span>• Toffee Nut</span>
+                        <span>• White Chocolate</span>
+                        <span>• Butterscotch</span>
+                        <span>• Strawberry</span>
+                        <span>• Cinnamon</span>
+                        <span>• Raspberry</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <div>
+                <div class="footer-logo">May Tea & Coffee</div>
+                <p class="footer-text" style="margin-bottom: 20px;">Experience the cloud-like escape in every sip. Crafting purity in nature since 2024.</p>
+                <p class="footer-text"><i class="fa-solid fa-location-dot"></i> 1101 N Hermitage Rd, PA 16148</p>
+                <p class="footer-text"><i class="fa-solid fa-phone"></i> (724) 718-8684</p>
+                <p class="footer-text"><i class="fa-solid fa-envelope"></i> mayteacoffee98@gmail.com</p>
+            </div>
+
+            <div>
+                <h4>Connect With Us</h4>
+                <p class="footer-text">Follow us for daily updates & offers.</p>
+                <div class="social-list">
+                    <a href="https://www.instagram.com/mayteacoffee.pa" target="_blank">
+                        <i class="fa-brands fa-instagram"></i> Instagram
+                    </a>
+                    <a href="https://www.tiktok.com/@may.tea.coffee0" target="_blank">
+                        <i class="fa-brands fa-tiktok"></i> TikTok
+                    </a>
+                    <a href="https://www.facebook.com/profile.php?id=61587109587784" target="_blank">
+                        <i class="fa-brands fa-facebook-f"></i> Facebook
+                    </a>
+                </div>
+            </div>
+
+            <div class="newsletter-box">
+                <h4>Join Our Newsletter</h4>
+                <p class="footer-text" style="margin-bottom: 15px; font-size: 14px;">Subscribe for exclusive secret cloud offers and updates.</p>
+                
+                <div style="width: 100%; border-radius: 12px; overflow: hidden; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);">
+                    <iframe 
+                        width="100%" 
+                        height="350px" 
+                        src="https://forms.office.com/Pages/ResponsePage.aspx?id=26ngYNyV80y0KqViYT9umYdBJw8iMv1Gt7bpAYbzHfxUQ0YyQ003NlA4ODdCQkE3NEEzUVFMMUlaWS4u&embed=true" 
+                        frameborder="0" 
+                        marginwidth="0" 
+                        marginheight="0" 
+                        style="border: none; max-width:100%; max-height:100vh; display: block;" 
+                        allowfullscreen webkitallowfullscreen mozallowfullscreen msallowfullscreen>
+                    </iframe>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            © 2024 May Tea & Coffee. All rights reserved. | Handcrafted in Pennsylvania.
+        </div>
+    </footer>
+
+    <nav class="floating-bar">
+        <a href="tel:7247188684" class="action-btn btn-call">
+            <i class="fa-solid fa-phone"></i> CALL
+        </a>
+        <div class="divider"></div>
+        <a href="https://maps.google.com" target="_blank" class="action-btn btn-dir">
+            <i class="fa-solid fa-location-arrow"></i> DIRECTION
+        </a>
+    </nav>
+
+    <script src="menu.js"></script>
+
+    <script>
+        function toggleTheme() {
+            const body = document.body;
+            const icon = document.getElementById('darkModeBtn');
+            const dynamicLogos = document.querySelectorAll('.dynamic-logo');
+            let newLogoSrc = '';
+
+            if (body.classList.contains('dark-mode')) {
+                body.classList.remove('dark-mode');
+                if (Math.random() > 0.5) {
+                    body.classList.add('sunset-mode');
+                    newLogoSrc = 'images/website-images/sunset-mode-logo.png';
+                } else {
+                    body.classList.remove('sunset-mode');
+                    newLogoSrc = 'images/logo.png';
+                }
+                icon.className = 'fa-solid fa-sun dark-toggle';
+            } else {
+                body.classList.remove('sunset-mode');
+                body.classList.add('dark-mode');
+                // Đường dẫn chính xác cho Dark Mode như bạn yêu cầu
+                newLogoSrc = 'images/website-images/dark-mode-logo.png';
+                icon.className = 'fa-solid fa-moon dark-toggle';
+            }
+
+            dynamicLogos.forEach(img => {
+                img.src = newLogoSrc;
+            });
+        }
+    </script>
+</body>
+</html>

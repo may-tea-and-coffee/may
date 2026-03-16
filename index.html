@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>May Tea & Coffee | Your Cloud Escape</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;800&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <style>
+        /* ==== CSS RESET & BIẾN TOÀN CỤC (3 CHẾ ĐỘ: DAY, SUNSET, NIGHT) ==== */
+        :root {
+            --primary: #0284c7; 
+            --primary-glow: rgba(2, 132, 199, 0.3);
+            
+            /* TRỜI SÁNG (DAY MODE) */
+            --bg-main: #f8fafc;
+            --text-main: #0f172a;
+            --text-gray: #64748b;
+            --card-bg: rgba(255, 255, 255, 0.9);
+            --band-bg-1: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(240, 249, 255, 0.95));
+            --band-bg-2: rgba(255, 255, 255, 0.6);
+            --sky-top: #38bdf8; 
+            --sky-bottom: #e0f2fe; 
+            --cloud-color: #ffffff;
+            --nav-bg: rgba(255, 255, 255, 0.95);
+            --shadow: 0 10px 30px rgba(0,0,0,0.05);
+            --glass-border: rgba(255,255,255,0.8);
+        }
+
+        /* HOÀNG HÔN (SUNSET MODE) */
+        body.sunset-mode {
+            --sky-top: #ff7e5f; 
+            --sky-bottom: #feb47b;
+            --cloud-color: rgba(255, 245, 245, 0.9); 
+            --primary: #be123c; 
+            --primary-glow: rgba(190, 18, 60, 0.3);
+            --band-bg-1: linear-gradient(135deg, rgba(255, 245, 245, 0.9), rgba(254, 215, 170, 0.9));
+            --band-bg-2: rgba(255, 255, 255, 0.5);
+        }
+
+        /* ĐÊM (NIGHT MODE) */
+        body.dark-mode {
+            --bg-main: #0f172a;
+            --text-main: #f8fafc;
+            --text-gray: #94a3b8;
+            --card-bg: rgba(30, 41, 59, 0.9);
+            --band-bg-1: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95));
+            --band-bg-2: rgba(30, 41, 59, 0.5);
+            --sky-top: #020617; 
+            --sky-bottom: #1e293b;
+            --cloud-color: #334155; 
+            --nav-bg: rgba(15, 23, 42, 0.95);
+            --primary: #38bdf8; 
+            --shadow: 0 10px 30px rgba(0,0,0,0.5);
+            --glass-border: rgba(255,255,255,0.1);
+        }
+
+        body, html {
+            margin: 0; padding: 0;
+            font-family: 'Outfit', sans-serif;
+            color: var(--text-main);
+            background-color: var(--bg-main);
+            scroll-behavior: smooth;
+            transition: background 1s ease, color 0.5s ease;
+            overflow-x: hidden;
+        }
+
+        a { text-decoration: none; color: inherit; }
+
+        /* ==== 1. HEADER ==== */
+        .header {
+            position: fixed; top: 0; left: 0; width: 100%;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px 40px; box-sizing: border-box;
+            background: var(--nav-bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000; transition: all 0.5s ease;
+        }
+
+        .logo-text { font-family: 'Outfit', sans-serif; font-size: 28px; font-weight: 800; color: var(--primary); letter-spacing: 2px; text-transform: uppercase; transition: color 0.5s ease;}
+        
+        .nav-menu { display: flex; gap: 30px; }
+        .nav-menu a { font-weight: 600; text-transform: uppercase; font-size: 14px; letter-spacing: 1px; transition: 0.3s; }
+        .nav-menu a:hover { color: var(--primary); }
+
+        .header-actions { display: flex; gap: 10px; align-items: center; }
+        .btn {
+            background: var(--primary); color: white;
+            padding: 10px 20px; border-radius: 50px;
+            font-weight: 700; transition: 0.3s; cursor: pointer; border: none; font-size: 14px;
+            display: inline-flex; align-items: center; gap: 8px;
+        }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 10px 20px var(--primary-glow); filter: brightness(1.1); }
+        .btn-outline { background: transparent; border: 2px solid var(--primary); color: var(--primary); }
+        .btn-outline:hover { background: var(--primary); color: white; }
+        
+        .dark-toggle { font-size: 22px; color: var(--text-main); cursor: pointer; margin-right: 15px; transition: 0.3s; }
+        .dark-toggle:hover { transform: scale(1.1); color: var(--primary); }
+
+        /* Nút Hamburger cho Mobile */
+        .mobile-menu-btn { display: none; font-size: 26px; color: var(--primary); cursor: pointer; margin-left: 5px; }
+
+        /* MOBILE MENU OVERLAY (LỚP KÍNH MỜ TOÀN MÀN HÌNH) */
+        .mobile-menu-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
+            background: var(--nav-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            z-index: 2000; display: flex; flex-direction: column; justify-content: center; align-items: center;
+            opacity: 0; pointer-events: none; transition: 0.4s ease; transform: translateY(-20px);
+        }
+        .mobile-menu-overlay.active { opacity: 1; pointer-events: all; transform: translateY(0); }
+        .close-menu-btn { position: absolute; top: 20px; right: 25px; font-size: 36px; color: var(--text-main); cursor: pointer; }
+        
+        .mobile-nav-links { display: flex; flex-direction: column; gap: 30px; text-align: center; }
+        .mobile-nav-links a { font-size: 24px; font-weight: 700; color: var(--text-main); text-transform: uppercase; letter-spacing: 2px; transition: 0.3s; }
+        .mobile-nav-links a:hover { color: var(--primary); }
+
+        /* THANH BOTTOM BAR (CHỈ HIỂN THỊ MOBILE) */
+        .floating-bar { display: none; }
+
+        /* ==== 2. HERO SECTION ==== */
+        .hero {
+            position: relative; min-height: 80vh; 
+            background: linear-gradient(180deg, var(--sky-top) 0%, var(--sky-bottom) 100%);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            text-align: center; padding: 120px 20px 80px; overflow: hidden; 
+            transition: background 1s ease;
+        }
+
+        .sun-moon-box { position: absolute; top: 12%; right: 10%; width: 80px; height: 80px; transition: all 1s ease; z-index: 1; }
+        body.sunset-mode .sun-moon-box { display: none; }
+        .sun-moon { width: 100%; height: 100%; border-radius: 50%; background: #fde047; box-shadow: 0 0 60px rgba(253, 224, 71, 0.8); transition: all 1s ease; }
+        body.dark-mode .sun-moon { background: transparent; box-shadow: inset -15px -15px 0 0 #f8fafc, 0 0 30px rgba(255,255,255,0.2); }
+
+        .moving-clouds { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none; }
+        .cloud-anim { position: absolute; background: var(--cloud-color); border-radius: 50px; filter: blur(3px); transition: background 1s ease; }
+        .cloud-anim::before, .cloud-anim::after { content: ''; position: absolute; background: var(--cloud-color); border-radius: 50%; transition: background 1s ease; }
+        
+        .c1 { width: 180px; height: 50px; top: 15%; opacity: 0.8; animation: drift 45s linear infinite; }
+        .c1::before { width: 70px; height: 70px; top: -35px; left: 25px; } .c1::after { width: 90px; height: 90px; top: -45px; right: 25px; }
+        .c2 { width: 130px; height: 40px; top: 35%; opacity: 0.5; transform: scale(0.8); animation: drift 35s linear infinite reverse; }
+        .c2::before { width: 50px; height: 50px; top: -25px; left: 15px; } .c2::after { width: 70px; height: 70px; top: -35px; right: 15px; }
+        .c3 { width: 220px; height: 60px; top: 60%; opacity: 0.7; transform: scale(1.2); animation: drift 60s linear infinite; }
+        .c3::before { width: 90px; height: 90px; top: -45px; left: 35px; } .c3::after { width: 110px; height: 110px; top: -55px; right: 35px; }
+        .c4 { width: 100px; height: 35px; top: 25%; opacity: 0.4; transform: scale(0.6); animation: drift 25s linear infinite reverse; }
+        .c4::before { width: 40px; height: 40px; top: -18px; left: 12px; } .c4::after { width: 50px; height: 50px; top: -25px; right: 12px; }
+        .c5 { width: 160px; height: 50px; top: 75%; opacity: 0.6; transform: scale(0.9); animation: drift 50s linear infinite; }
+        .c5::before { width: 60px; height: 60px; top: -30px; left: 20px; } .c5::after { width: 80px; height: 80px; top: -40px; right: 20px; }
+
+        @keyframes drift { from { left: -30%; } to { left: 110%; } }
+
+        .hero-content { position: relative; z-index: 10; display: flex; flex-direction: column; align-items: center;}
+        .hero-logo { width: 440px; max-width: 90vw; margin-bottom: 20px; filter: drop-shadow(0 15px 25px rgba(0,0,0,0.15)); animation: float 6s ease-in-out infinite; transition: all 0.5s ease; }
+        .hero h1 { font-family: 'Dancing Script', cursive; font-size: 55px; margin: 0 0 25px; color: var(--primary); text-shadow: 0 5px 15px rgba(0,0,0,0.1); transition: color 1s ease;}
+        
+        .store-hours { margin-top: 40px; font-size: 18px; font-weight: 800; color: #0f172a; letter-spacing: 0.5px; transition: color 0.5s ease; }
+        body.sunset-mode .store-hours, body.dark-mode .store-hours { color: #f8fafc; }
+        @keyframes float { 0% { transform: translateY(0); } 50% { transform: translateY(-15px); } 100% { transform: translateY(0); } }
+
+        .placeholder-img { object-fit: contain !important; padding: 20px; box-sizing: border-box; background: rgba(255, 255, 255, 0.2); }
+
+        /* ==== 3 & 4. FULL-WIDTH BANDS (TRẢI RỘNG 100% BỀ NGANG) ==== */
+        .full-width-section { width: 100%; padding: 60px 20px; box-sizing: border-box; position: relative; z-index: 20; backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); }
+        .offer-section { background: var(--band-bg-1); border-top: 1px solid var(--glass-border); border-bottom: 1px solid var(--glass-border); }
+        .social-section { background: var(--band-bg-2); border-bottom: 1px solid var(--glass-border); }
+
+        .band-container { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; gap: 50px; }
+
+        .offer-text { flex: 1; text-align: left; }
+        .offer-text h3 { color: var(--text-gray); font-size: 14px; text-transform: uppercase; letter-spacing: 2px; margin: 0;}
+        .offer-text h2 { font-size: 38px; color: var(--text-main); margin: 5px 0 15px;}
+        .offer-text p { font-size: 16px; color: var(--text-gray); margin-bottom: 25px; line-height: 1.6; max-width: 600px;}
+        
+        .offer-discount { background: linear-gradient(135deg, var(--primary), #60a5fa); padding: 35px 50px; border-radius: 20px; color: white; text-align: center; box-shadow: 0 15px 30px var(--primary-glow); min-width: 250px; }
+        .offer-discount .percent { font-size: 55px; font-weight: 800; line-height: 1; margin-bottom: 10px; font-family: 'Outfit', sans-serif;}
+        .offer-discount .date { font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; background: rgba(0,0,0,0.2); padding: 6px 15px; border-radius: 20px;}
+
+        .social-text { flex: 1; text-align: left;}
+        .social-text h2 { font-size: 38px; color: var(--primary); margin: 0 0 10px;}
+        .social-text p { font-size: 16px; color: var(--text-gray); margin: 0; max-width: 600px;}
+        .stars { color: #FDB813; font-size: 22px; margin-top: 15px; letter-spacing: 5px; filter: drop-shadow(0 2px 4px rgba(253, 184, 19, 0.4));}
+        
+        .social-actions { display: flex; flex-direction: column; align-items: center; gap: 15px; min-width: 250px;}
+        .social-links { display: flex; gap: 15px; }
+        .social-links a { 
+            width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 24px; color: var(--primary); background: transparent; border: 2px solid var(--primary); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); position: relative; overflow: hidden;
+        }
+        .social-links a::after { content: ''; position: absolute; top: 50%; left: 50%; width: 0; height: 0; background: var(--primary); border-radius: 50%; transform: translate(-50%, -50%); transition: all 0.4s ease; z-index: -1; }
+        .social-links a:hover { transform: translateY(-5px); color: white; border-color: var(--primary); box-shadow: 0 10px 20px var(--primary-glow); }
+        .social-links a:hover::after { width: 150%; height: 150%; }
+        .social-links a.social-google { color: #ea4335; border-color: #ea4335; }
+        .social-links a.social-google::after { background: #ea4335; }
+        .social-links a.social-google:hover { border-color: #ea4335; box-shadow: 0 10px 20px rgba(234, 67, 53, 0.2); }
+
+        /* ==== 5. ABOUT US, CATEGORIES, GALLERY ==== */
+        .section { padding: 80px 20px; max-width: 1200px; margin: 0 auto; position: relative; z-index: 10;}
+        .section-title { text-align: center; font-size: 36px; font-weight: 800; margin-bottom: 10px; color: var(--text-main);}
+        .section-subtitle { text-align: center; color: var(--text-gray); margin-bottom: 50px; }
+
+        .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
+        .about-img img { width: 100%; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+        .about-text h2 { font-size: 32px; margin-top: 0; color: var(--primary); font-family: 'Dancing Script', cursive; }
+        .about-text p { font-size: 16px; line-height: 1.8; color: var(--text-gray); margin-bottom: 20px; }
+
+        .category-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
+        .category-card { background: var(--card-bg); border-radius: 20px; overflow: hidden; box-shadow: var(--shadow); text-align: center; padding-bottom: 20px; transition: 0.3s; border: 1px solid var(--glass-border); }
+        .category-card:hover { transform: translateY(-10px); }
+        .category-card img { width: 100%; height: 220px; margin-bottom: 15px; } 
+        .category-card h3 { font-size: 20px; margin: 0; color: var(--text-main);}
+
+        .gallery-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
+        .gallery-item { position: relative; overflow: hidden; border-radius: 15px; aspect-ratio: 1 / 1; }
+        .gallery-item img { width: 100%; height: 100%; transition: transform 0.5s; background: var(--card-bg);}
+        .gallery-item:hover img { transform: scale(1.1); }
+        .gallery-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(2, 132, 199, 0.6); display: flex; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s; color: white; font-size: 30px; pointer-events: none; }
+        .gallery-item:hover .gallery-overlay { opacity: 1; }
+
+        /* ==== 6. FOOTER ==== */
+        .footer { background: #0f172a; color: white; padding: 70px 20px 20px; margin-top: 50px; }
+        .footer-container { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1.5fr 1fr 1.5fr; gap: 50px; }
+        .footer-logo { font-size: 28px; font-weight: 800; margin-bottom: 15px; color: var(--primary); font-family: 'Outfit', sans-serif;}
+        .footer-text { color: #94a3b8; line-height: 1.8; font-size: 15px; margin-bottom: 12px; display: flex; align-items: center; gap: 10px;}
+        .footer-text i { color: var(--primary); font-size: 16px; width: 20px; text-align: center;}
+        
+        .footer-links h4 { font-size: 20px; margin-bottom: 20px; color: white; }
+        .footer-links a { color: #94a3b8; display: block; margin-bottom: 12px; font-size: 15px; transition: 0.3s; }
+        .footer-links a:hover { color: var(--primary); transform: translateX(5px); }
+        
+        .newsletter-form { display: flex; flex-direction: column; gap: 12px; margin-top: 15px; }
+        .newsletter-form input { padding: 14px 20px; border-radius: 10px; border: 1px solid #334155; outline: none; background: rgba(255,255,255,0.05); color: white; font-family: 'Outfit';}
+        .newsletter-form button { background: var(--primary); color: white; border: none; padding: 14px; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 16px; transition: 0.3s;}
+        .newsletter-form button:hover { background: #0ea5e9; }
+        
+        .footer-bottom { text-align: center; padding-top: 30px; margin-top: 50px; border-top: 1px solid #1e293b; color: #64748b; font-size: 14px; }
+
+        /* ==== RESPONSIVE (SỬA LỖI ĐIỆN THOẠI Ở ĐÂY) ==== */
+        @media (max-width: 992px) {
+            .nav-menu { gap: 15px; }
+            .hero-logo { width: 300px; }
+            .band-container { flex-direction: column; text-align: center; gap: 30px; }
+            .offer-text p, .social-text p { margin: 0 auto 20px; }
+            .offer-discount { width: 100%; box-sizing: border-box; }
+            .category-grid { grid-template-columns: repeat(2, 1fr); }
+            .footer-container { grid-template-columns: 1fr; gap: 30px;}
+            .about-grid { grid-template-columns: 1fr; gap: 30px; }
+            .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        /* DÀNH RIÊNG CHO MOBILE */
+        @media (max-width: 768px) {
+            .header { padding: 15px 20px; }
+            .desktop-only { display: none !important; } /* Ẩn nút trên header desktop */
+            .nav-menu { display: none; } /* Ẩn menu ngang */
+            .mobile-menu-btn { display: block; } /* Hiện nút Hamburger */
+            
+            .hero-logo { width: 280px; }
+            .hero h1 { font-size: 42px; }
+            .store-hours { font-size: 16px; display: flex; flex-direction: column; gap: 5px; }
+            .store-hours span { display: none; } 
+            
+            .category-grid { grid-template-columns: 1fr; }
+            .full-width-section { padding: 40px 20px; }
+            .social-text h2 { font-size: 28px; }
+
+            /* BOTTOM BAR CHO ĐIỆN THOẠI */
+            .floating-bar { 
+                display: flex; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); 
+                width: 90%; background: var(--card-bg); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+                border: 1px solid var(--glass-border); border-radius: 100px; padding: 8px; z-index: 1000; 
+                box-shadow: 0 15px 35px var(--primary-glow);
+            }
+            .action-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 800; font-size: 15px; padding: 12px 0; border-radius: 100px; transition: 0.3s; color: var(--text-main); }
+            .btn-call { color: var(--primary); } 
+            .btn-dir { color: #059669; } 
+            .floating-bar .divider { width: 1px; height: 30px; background: var(--text-gray); opacity: 0.2; }
+            
+            /* Thêm khoảng trống dưới footer để không bị bottom bar che mất */
+            .footer { padding-bottom: 100px; }
+        }
+    </style>
+</head>
+<body class="light-mode">
+
+    <header class="header">
+        <div class="logo-text">MAY</div>
+        <nav class="nav-menu">
+            <a href="#home">Home</a>
+            <a href="#offers">Offers</a>
+            <a href="#categories">Menu</a>
+            <a href="#about">Story</a>
+            <a href="#gallery">Gallery</a>
+        </nav>
+        <div class="header-actions">
+            <i class="fa-solid fa-sun dark-toggle" id="darkModeBtn" onclick="toggleTheme()" title="Change Time of Day"></i>
+            
+            <a href="https://www.google.com/maps/dir/?api=1&destination=1101+N+Hermitage+Rd+Hermitage+PA+16148" target="_blank" class="btn btn-outline desktop-only"><i class="fa-solid fa-location-dot"></i> Direction</a>
+            <a href="tel:7247188684" class="btn desktop-only"><i class="fa-solid fa-phone"></i> Call Now</a>
+            
+            <i class="fa-solid fa-bars mobile-menu-btn" onclick="toggleMobileMenu()"></i>
+        </div>
+    </header>
+
+    <div class="mobile-menu-overlay" id="mobileMenu">
+        <i class="fa-solid fa-xmark close-menu-btn" onclick="toggleMobileMenu()"></i>
+        <div class="mobile-nav-links">
+            <a href="#home" onclick="toggleMobileMenu()">Home</a>
+            <a href="#offers" onclick="toggleMobileMenu()">Special Offers</a>
+            <a href="menu.html">Full Menu</a>
+            <a href="#about" onclick="toggleMobileMenu()">Our Story</a>
+            <a href="#gallery" onclick="toggleMobileMenu()">Gallery</a>
+        </div>
+    </div>
+
+    <section class="hero" id="home">
+        <div class="sun-moon-box"><div class="sun-moon"></div></div>
+        <div class="moving-clouds">
+            <div class="cloud-anim c1"></div><div class="cloud-anim c2"></div><div class="cloud-anim c3"></div><div class="cloud-anim c4"></div><div class="cloud-anim c5"></div>
+        </div>
+
+        <div class="hero-content">
+            <img src="images/logo.png" alt="May Tea & Coffee" id="hero-logo" class="hero-logo dynamic-logo">
+            <h1>Float in the Clouds</h1>
+            <a href="menu.html" class="btn" style="font-size: 18px; padding: 15px 40px; box-shadow: 0 10px 20px var(--primary-glow); margin-bottom: 10px;"><i class="fa-solid fa-mug-hot"></i> Explore Full Menu</a>
+            <br>
+            <div class="store-hours">
+                <i class="fa-regular fa-clock" style="color: var(--primary);"></i> 
+                Mon - Sat: 10:00 AM - 8:00 PM <span style="margin: 0 10px; color: var(--primary);">|</span> Sun: 11:00 AM - 7:00 PM
+            </div>
+        </div>
+    </section>
+
+    <section class="full-width-section offer-section" id="offers">
+        <div class="band-container">
+            <div class="offer-text">
+                <h3>Welcome Event</h3>
+                <h2>SOFT OPENING</h2>
+                <p>Join us to taste the purest ingredients directly sourced from nature. Step into the clouds and treat yourself to our handcrafted signature drinks.</p>
+                <a href="menu.html" class="btn"><i class="fa-solid fa-cup-togo"></i> Order Now</a>
+            </div>
+            
+            <div class="offer-discount">
+                <div class="percent">15% OFF</div>
+                <div class="date">From March 16th</div>
+                <div style="margin-top: 15px; font-size: 12px; opacity: 0.8;">*In-store only</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="full-width-section social-section" id="social">
+        <div class="band-container">
+            <div class="social-text">
+                <h2>Spread the Cloud, Get 10% OFF!</h2>
+                <p>Follow our social media and Rate us on Google. Show it at the register to claim your discount on your next drink!</p>
+                <div class="stars">
+                    <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                </div>
+            </div>
+            
+            <div class="social-actions">
+                <div class="social-links">
+                    <a href="https://www.instagram.com/mayteacoffee.pa" target="_blank" title="Follow us on Instagram"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="https://www.tiktok.com/@may.tea.coffee0" target="_blank" title="Follow us on TikTok"><i class="fa-brands fa-tiktok"></i></a>
+                    <a href="https://www.facebook.com/profile.php?id=61587109587784" target="_blank" title="Follow us on Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="#" target="_blank" class="social-google" title="Rate us on Google"><i class="fa-brands fa-google"></i></a>
+                </div>
+                <span style="font-size: 14px; font-weight: 600; color: var(--text-gray); margin-top: 10px;">Connect with us</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="section bg-light" id="about">
+        <div class="about-grid">
+            <div class="about-img">
+                <img src="images/home-page/matcha-story.png" alt="May Coffee Logo" class="placeholder-img dynamic-logo" style="border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); width: 100%;">
+            </div>
+            <div class="about-text">
+                <h2>The Story of May Coffee</h2>
+                <p>Welcome to May Tea & Coffee. Our mission is simple: to bring you back to nature through the purest ingredients. We meticulously source our tea leaves and coffee beans directly from responsible farms to ensure every cup delivers a cloud-like smoothness.</p>
+                <p>We are a dedicated international chain of Matcha desserts, rooting from traditional Japanese tea culture. By upholding standard craftsmanship and modern dedication, establish Matcha culture as our core brand. Experience the purity of clouds in every sip.</p>
+                <a href="menu.html" style="color: var(--primary); font-weight: 700; border-bottom: 2px solid var(--primary); padding-bottom: 2px;">Explore our cloud flavors <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="categories">
+        <h2 class="section-title">Cloud Flavours</h2>
+        <p class="section-subtitle">Find your favorite drink series</p>
+        <div class="category-grid">
+            <a href="menu.html#matcha" class="category-card">
+                <img src="images/home-page/matcha-latte-display.png" alt="Matcha Series">
+                <h3>Matcha Series</h3>
+            </a>
+            <a href="menu.html#coffee" class="category-card">
+                <img src="images/home-page/coffee-display.png" alt="Coffee Series">
+                <h3>Coffee Series</h3>
+            </a>
+            <a href="menu.html#milktea" class="category-card">
+                <img src="images/home-page/boba-tea-flavor.png" alt="Milk Tea">
+                <h3>Milk Tea & Fruit</h3>
+            </a>
+        </div>
+    </section>
+
+    <section class="section" id="gallery">
+        <h2 class="section-title">Our Gallery</h2>
+        <p class="section-subtitle">Follow us <strong>@mayteacoffee.pa</strong></p>
+
+        <div class="gallery-grid">
+            <div class="gallery-item">
+                <img src="images/logo.png" alt="Gallery" class="placeholder-img dynamic-logo">
+                <div class="gallery-overlay"><i class="fa-brands fa-instagram"></i></div>
+            </div>
+            <div class="gallery-item">
+                <img src="images/logo.png" alt="Gallery" class="placeholder-img dynamic-logo">
+                <div class="gallery-overlay"><i class="fa-brands fa-instagram"></i></div>
+            </div>
+            <div class="gallery-item">
+                <img src="images/logo.png" alt="Gallery" class="placeholder-img dynamic-logo">
+                <div class="gallery-overlay"><i class="fa-brands fa-instagram"></i></div>
+            </div>
+            <div class="gallery-item">
+                <img src="images/logo.png" alt="Gallery" class="placeholder-img dynamic-logo">
+                <div class="gallery-overlay"><i class="fa-brands fa-instagram"></i></div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <div>
+                <div class="footer-logo">May Tea & Coffee</div>
+                <p class="footer-text" style="margin-bottom: 20px;">Experience the cloud-like escape in every sip. Crafting purity in nature since 2026.</p>
+                <p class="footer-text"><i class="fa-solid fa-location-dot"></i> 1101 N Hermitage Rd, PA 16148</p>
+                <p class="footer-text"><i class="fa-solid fa-phone"></i> (724) 718-8684</p>
+                <p class="footer-text"><i class="fa-solid fa-envelope"></i> mayteacoffee98@gmail.com</p>
+            </div>
+
+            <div class="footer-links">
+                <h4>Quick Links</h4>
+                <a href="#home">Home</a>
+                <a href="#offers">Special Offers</a>
+                <a href="menu.html">Explore Menu</a>
+                <a href="#about">Our Story</a>
+                <a href="#gallery">Gallery feed</a>
+            </div>
+
+            <div class="newsletter-box">
+                <h4>Join Our Newsletter</h4>
+                <p class="footer-text" style="margin-bottom: 15px; font-size: 14px;">Subscribe for exclusive secret cloud offers and updates.</p>
+                
+                <div style="width: 100%; border-radius: 12px; overflow: hidden; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);">
+                    <iframe 
+                        width="100%" 
+                        height="350px" 
+                        src="https://forms.office.com/Pages/ResponsePage.aspx?id=26ngYNyV80y0KqViYT9umYdBJw8iMv1Gt7bpAYbzHfxUQ0YyQ003NlA4ODdCQkE3NEEzUVFMMUlaWS4u&embed=true" 
+                        frameborder="0" 
+                        marginwidth="0" 
+                        marginheight="0" 
+                        style="border: none; max-width:100%; max-height:100vh; display: block;" 
+                        allowfullscreen webkitallowfullscreen mozallowfullscreen msallowfullscreen>
+                    </iframe>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            © 2026 May Tea & Coffee. All rights reserved. | New Milk Tea Spot in Pennsylvania.
+        </div>
+    </footer>
+
+    <nav class="floating-bar">
+        <a href="tel:7247188684" class="action-btn btn-call">
+            <i class="fa-solid fa-phone"></i> CALL
+        </a>
+        <div class="divider"></div>
+        <a href="https://www.google.com/maps/dir/?api=1&destination=1101+N+Hermitage+Rd+Hermitage+PA+16148" target="_blank" class="action-btn btn-dir">
+            <i class="fa-solid fa-location-arrow"></i> DIRECTION
+        </a>
+    </nav>
+
+    <script>
+        function toggleTheme() {
+            const body = document.body;
+            const icon = document.getElementById('darkModeBtn');
+            const dynamicLogos = document.querySelectorAll('.dynamic-logo');
+            let newLogoSrc = '';
+
+            // Nếu ĐANG LÀ BAN ĐÊM -> Chuyển sang SÁNG (Random Light mode hoặc Sunset mode)
+            if (body.classList.contains('dark-mode')) {
+                body.classList.remove('dark-mode');
+                
+                if (Math.random() > 0.5) {
+                    // 1. Chuyển sang Hoàng hôn (Sunset Mode)
+                    body.classList.add('sunset-mode');
+                    newLogoSrc = 'images/website-images/sunset-mode-logo.png';
+                } else {
+                    // 2. Chuyển sang Trời sáng (Light Mode) -> Trở về logo mặc định
+                    body.classList.remove('sunset-mode');
+                    newLogoSrc = 'images/logo.png';
+                }
+                
+                // Đổi icon trên Header thành Mặt trời
+                icon.className = 'fa-solid fa-sun dark-toggle';
+            } 
+            // Nếu ĐANG LÀ SÁNG (Light/Sunset) -> Chuyển sang ĐÊM (Dark Mode)
+            else {
+                body.classList.remove('sunset-mode');
+                body.classList.add('dark-mode');
+                
+                // 3. Chuyển sang Trời đêm (Dark Mode) -> Dùng logo dark mode
+                newLogoSrc = 'images/website-images/dark-mode-logo.png';
+                
+                // Đổi icon trên Header thành Mặt trăng
+                icon.className = 'fa-solid fa-moon dark-toggle';
+            }
+
+            // Áp dụng đường dẫn ảnh mới cho TẤT CẢ các thẻ có class "dynamic-logo"
+            dynamicLogos.forEach(img => {
+                img.src = newLogoSrc;
+            });
+        }
+    </script>
+</body>
+</html>
