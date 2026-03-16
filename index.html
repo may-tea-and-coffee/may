@@ -199,19 +199,22 @@
         .section-subtitle { text-align: center; color: var(--text-gray); margin-bottom: 50px; }
 
         .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
-        .about-img img { width: 100%; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+        /* CẬP NHẬT LỚP ẢNH VÀ THÊM OBJECT-FIT: COVER ĐỂ KHÔNG BỊ MÉO */
+        .about-img img { width: 100%; aspect-ratio: 4/5; object-fit: cover; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
         .about-text h2 { font-size: 32px; margin-top: 0; color: var(--primary); font-family: 'Dancing Script', cursive; }
         .about-text p { font-size: 16px; line-height: 1.8; color: var(--text-gray); margin-bottom: 20px; }
 
         .category-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
         .category-card { background: var(--card-bg); border-radius: 20px; overflow: hidden; box-shadow: var(--shadow); text-align: center; padding-bottom: 20px; transition: 0.3s; border: 1px solid var(--glass-border); }
         .category-card:hover { transform: translateY(-10px); }
-        .category-card img { width: 100%; height: 220px; margin-bottom: 15px; } 
+        /* CẬP NHẬT LỚP ẢNH VÀ THÊM OBJECT-FIT: COVER ĐỂ KHÔNG BỊ MÉO */
+        .category-card img { width: 100%; height: 220px; object-fit: cover; margin-bottom: 15px; } 
         .category-card h3 { font-size: 20px; margin: 0; color: var(--text-main);}
 
         .gallery-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
         .gallery-item { position: relative; overflow: hidden; border-radius: 15px; aspect-ratio: 1 / 1; }
-        .gallery-item img { width: 100%; height: 100%; transition: transform 0.5s; background: var(--card-bg);}
+        /* CẬP NHẬT LỚP ẢNH VÀ THÊM OBJECT-FIT: COVER ĐỂ KHÔNG BỊ MÉO */
+        .gallery-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; background: var(--card-bg);}
         .gallery-item:hover img { transform: scale(1.1); }
         .gallery-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(2, 132, 199, 0.6); display: flex; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s; color: white; font-size: 30px; pointer-events: none; }
         .gallery-item:hover .gallery-overlay { opacity: 1; }
@@ -250,14 +253,15 @@
         /* DÀNH RIÊNG CHO MOBILE */
         @media (max-width: 768px) {
             .header { padding: 15px 20px; }
-            .desktop-only { display: none !important; } /* Ẩn nút trên header desktop */
-            .nav-menu { display: none; } /* Ẩn menu ngang */
-            .mobile-menu-btn { display: block; } /* Hiện nút Hamburger */
+            .desktop-only { display: none !important; } 
+            .nav-menu { display: none; } 
+            .mobile-menu-btn { display: block; } 
             
             .hero-logo { width: 280px; }
             .hero h1 { font-size: 42px; }
-            .store-hours { font-size: 16px; display: flex; flex-direction: column; gap: 5px; }
-            .store-hours span { display: none; } 
+            
+            /* SỬA LẠI ĐỊNH DẠNG GIỜ MỞ CỬA CHO MOBILE (Không dùng thẻ span pipe nữa) */
+            .store-hours { font-size: 16px; }
             
             .category-grid { grid-template-columns: 1fr; }
             .full-width-section { padding: 40px 20px; }
@@ -275,7 +279,6 @@
             .btn-dir { color: #059669; } 
             .floating-bar .divider { width: 1px; height: 30px; background: var(--text-gray); opacity: 0.2; }
             
-            /* Thêm khoảng trống dưới footer để không bị bottom bar che mất */
             .footer { padding-bottom: 100px; }
         }
     </style>
@@ -287,7 +290,7 @@
         <nav class="nav-menu">
             <a href="#home">Home</a>
             <a href="#offers">Offers</a>
-            <a href="#categories">Menu</a>
+            <a href="menu.html">Menu</a>
             <a href="#about">Story</a>
             <a href="#gallery">Gallery</a>
         </nav>
@@ -323,10 +326,15 @@
             <h1>Float in the Clouds</h1>
             <a href="menu.html" class="btn" style="font-size: 18px; padding: 15px 40px; box-shadow: 0 10px 20px var(--primary-glow); margin-bottom: 10px;"><i class="fa-solid fa-mug-hot"></i> Explore Full Menu</a>
             <br>
+            
             <div class="store-hours">
-                <i class="fa-regular fa-clock" style="color: var(--primary);"></i> 
-                Mon - Sat: 10:00 AM - 8:00 PM <span style="margin: 0 10px; color: var(--primary);">|</span> Sun: 11:00 AM - 7:00 PM
+                <div style="margin-bottom: 8px;">
+                    <i class="fa-regular fa-clock" style="color: var(--primary);"></i> 
+                    Mon - Sat: 10:00 AM - 8:00 PM
+                </div>
+                <div>Sun: 11:00 AM - 7:00 PM</div>
             </div>
+
         </div>
     </section>
 
@@ -372,7 +380,7 @@
     <section class="section bg-light" id="about">
         <div class="about-grid">
             <div class="about-img">
-                <img src="images/home-page/matcha-story.png" alt="May Coffee Logo" class="placeholder-img dynamic-logo" style="border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); width: 100%;">
+                <img src="images/home-page/matcha-story.png" alt="Our Story Image">
             </div>
             <div class="about-text">
                 <h2>The Story of May Coffee</h2>
@@ -453,7 +461,7 @@
                     <iframe 
                         width="100%" 
                         height="350px" 
-                        src="https://forms.office.com/Pages/ResponsePage.aspx?id=26ngYNyV80y0KqViYT9umYdBJw8iMv1Gt7bpAYbzHfxUQ0YyQ003NlA4ODdCQkE3NEEzUVFMMUlaWS4u&embed=true" 
+                        src="https://script.google.com/macros/s/AKfycbzEp8IYu8NqsK4klkLp_ElfV39jZtm7wuIKZbxaancQ7DbZPuv0lE_Z2v8Tgw5OjVh-/exec" 
                         frameborder="0" 
                         marginwidth="0" 
                         marginheight="0" 
@@ -480,6 +488,11 @@
     </nav>
 
     <script>
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.toggle('active');
+        }
+
         function toggleTheme() {
             const body = document.body;
             const icon = document.getElementById('darkModeBtn');
